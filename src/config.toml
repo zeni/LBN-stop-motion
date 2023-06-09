@@ -12,17 +12,22 @@ scale = 5
 ratio = 1.2
 l_init = 10
 n = 5
-color = [ 100, 255, 100,]
+color = [ 255, 255, 255,]
 invert = false
 
+[onion]
+n = 2
+opacity = 50
+enable = true
+
 [camera]
+source = 0
 exposure = -6
 auto_exp = false
-source = 0
 
 [arduino]
 use = false
-port="COM14"
+port = "COM14"
 
 [save]
 data_folder = "d:\\ampersand\\mikasa\\mikasa_manual\\data"

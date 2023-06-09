@@ -12,8 +12,6 @@ import tkinter as tk
 from pathlib import Path
 import toml
 
-use_arduino = False
-
 
 class main(tk.Frame):
     def __init__(self):
@@ -30,7 +28,7 @@ class main(tk.Frame):
         self.parent.protocol("WM_DELETE_WINDOW", self.__callback)
         self.parent.title("LBN Stop Motion")
         self.win_width = 800
-        self.win_height = 800
+        self.win_height = 900
         self.parent.geometry(f"{self.win_width}x{self.win_height}+10+10")
         self.parent.resizable(False, False)
         # GUI / start
@@ -56,7 +54,7 @@ class main(tk.Frame):
         ################################
         # settings display
         settings_frame = ttk.Frame(self.parent, relief=tk.SUNKEN, borderwidth=1)
-        settings_frame.grid(column=0, row=0, padx=10, pady=10)
+        settings_frame.grid(column=0, row=0, rowspan=2, padx=10, pady=10)
         # scale
         scale_frame = ttk.Frame(settings_frame)
         scale_frame.grid(column=0, row=0, padx=5, pady=5)
@@ -98,22 +96,28 @@ class main(tk.Frame):
             textvariable=self.exposure_var,
             command=lambda: self.set_value("exp"),
             font=self.tk_font,
+            width=5,
         )
         set_exposure_spin.grid(column=0, row=2, padx=5, pady=5)
         # onion
         onion_frame = ttk.Frame(settings_frame)
         onion_frame.grid(column=0, row=3, columnspan=2, pady=5)
+        r = 0
         onion_text = ttk.Label(onion_frame, text="Onion skin")
-        onion_text.grid(column=0, row=0, padx=5, pady=5)
-        self.enable_onion = tk.BooleanVar(value=True)
+        onion_text.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        r += 1
+        # self.enable_onion_var = tk.BooleanVar(value=True)
         onion_chk = ttk.Checkbutton(
             onion_frame,
-            variable=self.enable_onion,
-            command=lambda: self.set_value("onion"),
+            variable=self.enable_onion_var,
+            command=lambda: self.set_value("enable_onion"),
             text="enabled",
         )
-        onion_chk.grid(column=0, row=1, padx=5, pady=5)
-        self.opacity_var = tk.IntVar(value=50)
+        onion_chk.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        r += 1
+        # self.opacity_var = tk.IntVar(value=50)
+        opacity_text = ttk.Label(onion_frame, text="opacity")
+        opacity_text.grid(column=0, row=r, padx=5, pady=5)
         set_opacity_spin = ttk.Spinbox(
             onion_frame,
             from_=0,
@@ -122,8 +126,24 @@ class main(tk.Frame):
             textvariable=self.opacity_var,
             command=lambda: self.set_value("opacity"),
             font=self.tk_font,
+            width=5,
         )
-        set_opacity_spin.grid(column=0, row=3, padx=5, pady=5)
+        set_opacity_spin.grid(column=1, row=r, padx=5, pady=5)
+        r += 1
+        # self.n_onion_var = tk.IntVar(value=2)
+        n_onion_text = ttk.Label(onion_frame, text="n")
+        n_onion_text.grid(column=0, row=r, padx=5, pady=5)
+        set_n_onion_spin = ttk.Spinbox(
+            onion_frame,
+            from_=1,
+            to=10,
+            increment=1,
+            textvariable=self.n_onion_var,
+            command=lambda: self.set_value("n_onion"),
+            font=self.tk_font,
+            width=5,
+        )
+        set_n_onion_spin.grid(column=1, row=r, padx=5, pady=5)
         # sequence
         seq_frame = ttk.Frame(settings_frame)
         seq_frame.grid(column=0, row=4, columnspan=2, pady=10)
@@ -137,6 +157,14 @@ class main(tk.Frame):
             seq_frame, text="Set", command=lambda: self.set_value("seq_name")
         )
         seq_name_btn.grid(column=0, row=2, columnspan=2, padx=5, pady=5)
+        # arduino
+        arduino_use_chk = ttk.Checkbutton(
+            settings_frame,
+            variable=self.use_arduino_var,
+            command=lambda: self.set_value("use_arduino"),
+            text="arduino",
+        )
+        arduino_use_chk.grid(column=0, row=5, padx=5, pady=5)
         # buttons
         btn_frame = ttk.Frame(self.parent)
         btn_frame.grid(column=1, row=0, pady=10)
@@ -467,12 +495,13 @@ class main(tk.Frame):
         self.camera.start_stream(0)
         cv2.namedWindow("Monitoring", cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback("Monitoring", self.mouse_click)
-        if use_arduino:
-            self.arduino = arduino.Arduino("COM14")
+        if self.use_arduino_var.get():
+            self.arduino = arduino.Arduino(self.port)
         # cv2.imshow("strip", np.zeros((10, 10, 3), dtype=np.uint8))
 
     def quit(self):
         """Quit"""
+        self.save_config()
         cv2.destroyAllWindows()
         self.camera.stop()
         # self.parent.after_cancel(self.after_id)
@@ -498,7 +527,7 @@ class main(tk.Frame):
                 else:
                     self.update_scales()
                     self.display_capture()
-            if use_arduino:
+            if self.use_arduino_var.get():
                 if self.arduino.check_capture():
                     self.capture_frame()
             self.display_sequence()
@@ -642,6 +671,13 @@ class main(tk.Frame):
                             config.get("scales", {}).get("invert")
                         )
                         self.color_scale = config.get("scales", {}).get("color")
+                        # onion
+                        self.enable_onion_var = tk.BooleanVar(value=True)
+                        self.enable_onion_var.set(config.get("onion", {}).get("enable"))
+                        self.opacity_var = tk.IntVar(value=50)
+                        self.opacity_var.set(config.get("onion", {}).get("opacity"))
+                        self.n_onion_var = tk.IntVar(value=2)
+                        self.n_onion_var.set(config.get("onion", {}).get("n"))
                         # arduino
                         self.use_arduino_var = tk.BooleanVar(value=True)
                         self.use_arduino_var.set(config.get("arduino", {}).get("use"))
@@ -683,13 +719,19 @@ class main(tk.Frame):
         config["scales"]["l_init"] = self.scale_init_length_var.get()
         config["scales"]["n"] = self.scale_length_var.get()
         config["scales"]["color"] = [
-            self.color_scale_var[0],
-            self.color_scale_var[1],
-            self.color_scale_var[2],
+            self.color_scale_var[0].get(),
+            self.color_scale_var[1].get(),
+            self.color_scale_var[2].get(),
         ]
         config["scales"]["invert"] = self.scale_inverted_var.get()
+        # onion
+        config["onion"] = {}
+        config["onion"]["n"] = self.n_onion_var.get()
+        config["onion"]["opacity"] = self.opacity_var.get()
+        config["onion"]["enable"] = self.enable_onion_var.get()
         # camera
         config["camera"] = {}
+        config["camera"]["source"] = self.camera.source
         config["camera"]["exposure"] = self.exposure_var.get()
         config["camera"]["auto_exp"] = self.auto_exp_var.get()
         # arduino
@@ -814,13 +856,54 @@ class main(tk.Frame):
                                 )
                                 os.rename(filename, filename_new)
 
-    def display_capture(self):
+    def display_capture_backup(self):
         if len(self.sequence) > 0:
             if self.enable_onion.get():
                 alpha = self.opacity_var.get() / 100
                 output = cv2.addWeighted(
                     self.frame, 1 - alpha, self.sequence[-1], alpha, 0
                 )
+            else:
+                output = self.frame.copy()
+        else:
+            output = self.frame.copy()
+        output = self.display_scale_line(self.current_scale, output)
+        if len(self.scales) > 0:
+            for i, s in enumerate(self.scales):
+                if self.scale_settings[i][0] == 1:
+                    output = self.display_scale_multiple(
+                        s, output, self.scale_settings[i]
+                    )
+                else:
+                    output = self.display_scale_multiple_ratio(
+                        s, output, self.scale_settings[i]
+                    )
+        cv2.imshow(
+            "Monitoring",
+            cv2.resize(
+                output,
+                (
+                    int(self.width * self.scale_scale.get() / 10),
+                    int(self.height * self.scale_scale.get() / 10),
+                ),
+            ),
+        )
+
+    def display_capture(self):
+        if self.enable_onion_var.get():
+            n_onion = self.n_onion_var.get()
+            output = self.frame.copy()
+            if len(self.sequence) > 0:
+                n_onion = min(n_onion, len(self.sequence))
+                alpha = self.opacity_var.get() / 100
+                for i in range(n_onion):
+                    output = cv2.addWeighted(
+                        output,
+                        1 - alpha ** (i + 1),
+                        self.sequence[-(i + 1)],
+                        alpha ** (i + 1),
+                        0,
+                    )
             else:
                 output = self.frame.copy()
         else:
@@ -1269,6 +1352,9 @@ class main(tk.Frame):
     def set_value(self, name):
         """Set values (general method for widgets)"""
         match name:
+            case "use_arduino":
+                if self.use_arduino_var.get():
+                    self.arduino = arduino.Arduino(self.port)
             case "color_scale":
                 for i in range(3):
                     self.color_scale[i] = self.color_scale_var[i].get()
