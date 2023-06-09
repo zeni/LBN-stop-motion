@@ -1,0 +1,28 @@
+title = "Configuration file"
+
+[version]
+theme = "adapta"
+
+[display]
+width = 1920
+height = 1080
+scale = 5
+
+[scales]
+ratio = 1.2
+l_init = 10
+n = 5
+color = [ 100, 255, 100,]
+invert = false
+
+[camera]
+exposure = -6
+auto_exp = false
+source = 0
+
+[arduino]
+use = false
+port="COM14"
+
+[save]
+data_folder = "d:\\ampersand\\mikasa\\mikasa_manual\\data"

@@ -4,11 +4,13 @@ import os
 import numpy as np
 from camera import camera
 from arduino import arduino
+from errors import errors
 from tkinter import ttk
 from ttkthemes import ThemedStyle
 import cv2
 import tkinter as tk
 from pathlib import Path
+import toml
 
 use_arduino = False
 
@@ -23,6 +25,7 @@ class main(tk.Frame):
         self.parent = root
         # theme
         self.style = ThemedStyle(self.parent)
+        self.initialization()
         # prevent closing window with x
         self.parent.protocol("WM_DELETE_WINDOW", self.__callback)
         self.parent.title("LBN Stop Motion")
@@ -31,7 +34,6 @@ class main(tk.Frame):
         self.parent.geometry(f"{self.win_width}x{self.win_height}+10+10")
         self.parent.resizable(False, False)
         # GUI / start
-        self.initialization()
         self.create_gui()
         self.camera.start()
         self.loop()
@@ -78,14 +80,14 @@ class main(tk.Frame):
         exposure_frame.grid(column=0, row=2, columnspan=2, pady=5)
         exposure_text = ttk.Label(exposure_frame, text="Exposure")
         exposure_text.grid(column=0, row=0, padx=5, pady=5)
-        self.auto_expo = tk.BooleanVar(value=False)
+        # self.auto_expo_var = tk.BooleanVar(value=False)
         exposure_auto_chk = ttk.Checkbutton(
             exposure_frame,
-            variable=self.auto_expo,
+            variable=self.auto_exp_var,
             command=lambda: self.set_value("auto_exp"),
             text="auto",
         )
-        self.auto_expo.set(self.camera.auto_exp)
+        self.auto_exp_var.set(self.camera.auto_exp)
         exposure_auto_chk.grid(column=0, row=1, padx=5, pady=5)
         self.exposure_var = tk.IntVar(value=self.camera.exposure)
         set_exposure_spin = ttk.Spinbox(
@@ -196,7 +198,7 @@ class main(tk.Frame):
         r += 1
         scale_length_text = ttk.Label(scales_frame, text="Number:")
         scale_length_text.grid(column=0, row=r, padx=5, pady=5)
-        self.scale_length_var = tk.IntVar(value=5)
+        # self.scale_length_var = tk.IntVar(value=5)
         set_scale_length_spin = ttk.Spinbox(
             scales_frame,
             from_=1,
@@ -211,7 +213,7 @@ class main(tk.Frame):
         r += 1
         scale_init_length_text = ttk.Label(scales_frame, text="Initial (px):")
         scale_init_length_text.grid(column=0, row=r, padx=5, pady=5)
-        self.scale_init_length_var = tk.IntVar(value=2)
+        # self.scale_init_length_var = tk.IntVar(value=2)
         set_scale_init_length_spin = ttk.Spinbox(
             scales_frame,
             from_=1,
@@ -226,7 +228,7 @@ class main(tk.Frame):
         r += 1
         scale_ratio_text = ttk.Label(scales_frame, text="Ratio:")
         scale_ratio_text.grid(column=0, row=r, padx=5, pady=5)
-        self.scale_ratio_var = tk.DoubleVar(value=1.2)
+        # self.scale_ratio_var = tk.DoubleVar(value=1.2)
         set_scale_ratio_spin = ttk.Spinbox(
             scales_frame,
             from_=1,
@@ -239,7 +241,7 @@ class main(tk.Frame):
         )
         set_scale_ratio_spin.grid(column=1, row=r, padx=5, pady=5)
         r += 1
-        self.scale_inverted_var = tk.BooleanVar(value=False)
+        # self.scale_inverted_var = tk.BooleanVar(value=False)
         scale_inverted_chk = ttk.Checkbutton(
             scales_frame,
             variable=self.scale_inverted_var,
@@ -447,9 +449,6 @@ class main(tk.Frame):
         # tkinter font
         self.tk_font = ("Helvetica", 12)
         # other
-        self.width = 1920
-        self.height = 1080
-        self.scale = 5
         self.sequence = []
         self.current_seq_frame = 0
         self.seq_name = ""
@@ -459,12 +458,12 @@ class main(tk.Frame):
         self.current_scale = []
         self.new_scale = True
         self.mouse_coords = []
-        self.color_scale = [255, 255, 255]
         self.color_selected_scale = [255, 255, 255]
         self.selected_scale = 0
         self.scale_settings = []
         self.set_settings = False
-        self.camera = camera.Camera(w=self.width, h=self.height)
+        self.read_config()
+        # self.camera = camera.Camera(w=self.width, h=self.height)
         self.camera.start_stream(0)
         cv2.namedWindow("Monitoring", cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback("Monitoring", self.mouse_click)
@@ -579,6 +578,134 @@ class main(tk.Frame):
     #########################
     ##   Program helpers   ##
     #########################
+
+    def read_config(self):
+        """
+        Read config file.
+        """
+        conf_path = os.path.join(self.application_path, "config.toml")
+        try:
+            if os.path.exists(conf_path):
+                with open(conf_path, "r", encoding="utf-8") as f:
+                    try:
+                        try:
+                            try:
+                                config = toml.load(f)
+                            except UnicodeDecodeError as ex:
+                                raise errors.TomlDecodeError() from ex
+                        except errors.TomlDecodeError:
+                            pass
+                        except toml.TomlDecodeError as ex:
+                            raise errors.TomlDecodeError() from ex
+                    except errors.TomlDecodeError:
+                        pass
+                    else:
+                        # theme
+                        self.theme = config.get("version", {}).get("theme")
+                        match self.theme:
+                            case "":
+                                pass
+                            case _:
+                                try:
+                                    try:
+                                        self.style.set_theme(self.theme)
+                                    except Exception as ex:
+                                        raise errors.UnknownTheme() from ex
+                                except errors.UnknownTheme:
+                                    self.theme = ""
+                        # display
+                        self.width = config.get("display", {}).get("width")
+                        self.height = config.get("display", {}).get("height")
+                        self.camera = camera.Camera(w=self.width, h=self.height)
+                        self.scale = config.get("display", {}).get("scale")
+                        # camera
+                        camera_source = config.get("camera", {}).get("source")
+                        self.camera.start_stream(camera_source)
+                        self.auto_exp_var = tk.BooleanVar(value=False)
+                        self.auto_exp_var.set(config.get("camera", {}).get("auto_exp"))
+                        self.exposure_var = tk.IntVar(value=-7)
+                        self.exposure_var.set(config.get("camera", {}).get("exposure"))
+                        self.camera.set_exposure(self.exposure_var.get())
+                        self.camera.auto_exp = self.auto_exp_var.get()
+                        self.camera.exposure_auto()
+                        # scales
+                        self.scale_ratio_var = tk.DoubleVar(value=1)
+                        self.scale_ratio_var.set(config.get("scales", {}).get("ratio"))
+                        self.scale_init_length_var = tk.IntVar(value=10)
+                        self.scale_init_length_var.set(
+                            config.get("scales", {}).get("l_init")
+                        )
+                        self.scale_length_var = tk.IntVar(value=5)
+                        self.scale_length_var.set(config.get("scales", {}).get("n"))
+                        self.scale_inverted_var = tk.BooleanVar(value=False)
+                        self.scale_inverted_var.set(
+                            config.get("scales", {}).get("invert")
+                        )
+                        self.color_scale = config.get("scales", {}).get("color")
+                        # arduino
+                        self.use_arduino_var = tk.BooleanVar(value=True)
+                        self.use_arduino_var.set(config.get("arduino", {}).get("use"))
+                        self.port = config.get("arduino", {}).get("port")
+                        # save
+                        data_folder = config.get("save", {}).get("data_folder")
+                        if not os.path.exists(data_folder):
+                            data_folder = "data"
+                        if data_folder == "data" or data_folder == "":
+                            self.data_folder = os.path.join(
+                                self.application_path, "data"
+                            )
+                            if not os.path.exists(self.data_folder):
+                                os.makedirs(self.data_folder)
+                        else:
+                            self.data_folder = data_folder
+            else:
+                raise errors.NoConfig()
+        except errors.NoConfig:
+            pass
+
+    def save_config(self):
+        """
+        Save config file.
+        """
+        config = {}
+        config["title"] = "Configuration file"
+        # version
+        config["version"] = {}
+        config["version"]["theme"] = self.theme
+        # display
+        config["display"] = {}
+        config["display"]["width"] = self.width
+        config["display"]["height"] = self.height
+        config["display"]["scale"] = int(self.scale_scale.get())
+        # scales
+        config["scales"] = {}
+        config["scales"]["ratio"] = self.scale_ratio_var.get()
+        config["scales"]["l_init"] = self.scale_init_length_var.get()
+        config["scales"]["n"] = self.scale_length_var.get()
+        config["scales"]["color"] = [
+            self.color_scale_var[0],
+            self.color_scale_var[1],
+            self.color_scale_var[2],
+        ]
+        config["scales"]["invert"] = self.scale_inverted_var.get()
+        # camera
+        config["camera"] = {}
+        config["camera"]["exposure"] = self.exposure_var.get()
+        config["camera"]["auto_exp"] = self.auto_exp_var.get()
+        # arduino
+        config["arduino"] = {}
+        config["arduino"]["use"] = self.use_arduino_var.get()
+        if self.use_arduino_var.get():
+            config["arduino"]["port"] = self.arduino.port
+        else:
+            config["arduino"]["port"] = self.port
+        # save
+        config["save"] = {}
+        config["save"]["data_folder"] = self.data_folder
+        # save config
+        save_path = os.path.join(self.application_path, "config.toml")
+        with open(save_path, "w", encoding="utf-8") as configfile:
+            toml.dump(config, configfile)
 
     def rgbtohex(self, rgb):
         """convert RGB to tkinter color"""

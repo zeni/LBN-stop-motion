@@ -1,0 +1,249 @@
+import sys
+import os
+import gettext
+from tkinter import messagebox
+
+
+class Error():
+    if getattr(sys, 'frozen', False):
+        application_path_temp = sys._MEIPASS
+    else:
+        application_path_temp = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "..")
+    el = gettext.translation(
+        'error', localedir=os.path.join(application_path_temp, "locale"), languages=["en"])
+    el.install()
+    _ = el.gettext
+
+    def __init__(self):
+        self.message_types = []
+        self.message_types.append(Error._("Error"))
+        self.message_types.append(Error._("Warning"))
+        self.message_types.append(Error._("Message"))
+        self.message_types.append(Error._("Confirm"))
+        self.message_quit = Error._("Application will quit.")
+        self.message_stop = Error._("Detection will stop.")
+
+    def display_messagebox(self, t, m):
+        match t:
+            case 0:
+                messagebox.showerror(
+                    title=self.message_types[t], message=m)
+            case 1:
+                messagebox.showwarning(
+                    title=self.message_types[t], message=m)
+            case 2:
+                messagebox.showinfo(
+                    title=self.message_types[t], message=m)
+            case 3:
+                messagebox.askokcancel(title=self.message_types[t], message=m)
+
+    def display_messagebox_stop(self, t, m):
+        match t:
+            case 0:
+                messagebox.showerror(
+                    title=self.message_types[t], message=m+"\n"+self.message_stop)
+            case 1:
+                messagebox.showwarning(
+                    title=self.message_types[t], message=m+"\n"+self.message_stop)
+            case 2:
+                messagebox.showinfo(
+                    title=self.message_types[t], message=m+"\n"+self.message_stop)
+            case 3:
+                messagebox.askokcancel(
+                    title=self.message_types[t], message=m+"\n"+self.message_stop)
+
+    def display_messagebox_quit(self, t, m):
+        match t:
+            case 0:
+                messagebox.showerror(
+                    title=self.message_types[t], message=m+"\n"+self.message_quit)
+            case 1:
+                messagebox.showwarning(
+                    title=self.message_types[t], message=m+"\n"+self.message_quit)
+            case 2:
+                messagebox.showinfo(
+                    title=self.message_types[t], message=m+"\n"+self.message_quit)
+            case 3:
+                messagebox.askokcancel(
+                    title=self.message_types[t], message=m+"\n"+self.message_quit)
+        sys.exit()
+
+
+class NoLicenseFile(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("No license")
+        Error.display_messagebox_quit(Error(), self.type, self.message)
+
+
+class LicenseError(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("Invalid license")
+        Error.display_messagebox_quit(Error(), self.type, self.message)
+
+
+class DecryptionError(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("Invalid license")
+        Error.display_messagebox_quit(Error(), self.type, self.message)
+
+
+"""
+class CameraNotOpen(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("Unable to open camera")
+        Error.display_messagebox_quit(Error(), self.type, self.message)"""
+
+
+"""class NoCamera(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("Camera not found")
+        Error.display_messagebox_quit(Error(), self.type, self.message)"""
+
+
+class CameraEmptyFrame(Exception):
+    def __init__(self):
+        self.type = 1
+        self.message = Error._("Camera frame is empty.")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class VideoCaptureError(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("Unable to capture frame.") + \
+            "\n"+Error._("Please check camera connection.")
+        Error.display_messagebox_quit(Error(), self.type, self.message)
+
+
+class NoTargets(Exception):
+    def __init__(self):
+        self.type = 2
+        self.message = Error._("No targets defined")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class FENoContours(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("No contours extracted")
+        Error.display_messagebox_stop(Error(), self.type, self.message)
+
+
+class FEPreLPFEmpty(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("No contours after f1")
+        Error.display_messagebox_stop(Error(), self.type, self.message)
+
+
+class FELPFEmpty(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("No contours after f3")
+        Error.display_messagebox_stop(Error(), self.type, self.message)
+
+
+class FEHullEmpty(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("No contours after f2")
+        Error.display_messagebox_stop(Error(), self.type, self.message)
+
+
+class HighRoundnessTimeout(Exception):
+    def __init__(self):
+        self.type = 1
+        self.message = Error._("High roundness timeout")
+        Error.display_messagebox_stop(Error(), self.type, self.message)
+
+
+class TargetNameExists(Exception):
+    def __init__(self):
+        self.type = 1
+        self.message = Error._("The name of the target already exists")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class EmptyTargetName(Exception):
+    def __init__(self):
+        self.type = 1
+        self.message = Error._("The name of the target is empty")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class TargetAdded(Exception):
+    def __init__(self):
+        self.type = 2
+        self.message = Error._("Target has been added")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class TargetDeleted(Exception):
+    def __init__(self):
+        self.type = 2
+        self.message = Error._("Target has been deleted")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class PermissionDenied(Exception):
+    def __init__(self):
+        self.type = 1
+        self.message = Error._("Permission denied") + \
+            "\n"+Error._("change save directory")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class InvalidTarget(Exception):
+    def __init__(self):
+        self.type = 1
+        self.message = Error._("Invalid target")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class InvalidFeature(Exception):
+    def __init__(self):
+        self.type = 1
+        self.message = Error._("Invalid feature")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class TomlDecodeError(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("Config file decoding error")
+        Error.display_messagebox_quit(Error(), self.type, self.message)
+
+
+class UnknownTheme(Exception):
+    def __init__(self):
+        self.type = 1
+        self.message = Error._("Unknown theme")+": " + \
+            "\n"+Error._("switching to default theme")
+        Error.display_messagebox(Error(), self.type, self.message)
+
+
+class NoConfig(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("No config file")
+        Error.display_messagebox_quit(Error(), self.type, self.message)
+
+
+class ConfigWrongFormat(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("Wrong format of config file")
+        Error.display_messagebox_quit(Error(), self.type, self.message)
+
+
+class TargetsWrongFormat(Exception):
+    def __init__(self):
+        self.type = 0
+        self.message = Error._("Wrong format of targets file")
+        Error.display_messagebox_quit(Error(), self.type, self.message)
