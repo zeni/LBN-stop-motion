@@ -52,14 +52,18 @@ class main(tk.Frame):
         self.style.configure("TButton", font=self.tk_font)
         self.style.configure("TLabel", font=self.tk_font)
         ################################
+        columns = []
+        for i in range(3):
+            columns.append(ttk.Frame(self.parent, relief=tk.SUNKEN, borderwidth=1))
+            columns[-1].grid(column=i, row=0, padx=2, pady=2)
         # settings display
-        settings_frame = ttk.Frame(self.parent, relief=tk.SUNKEN, borderwidth=1)
-        settings_frame.grid(column=0, row=0, rowspan=2, padx=10, pady=10)
+        settings_frame = ttk.Frame(columns[0])
+        settings_frame.grid(column=0, row=0, padx=2, pady=2)
         # scale
         scale_frame = ttk.Frame(settings_frame)
-        scale_frame.grid(column=0, row=0, padx=5, pady=5)
+        scale_frame.grid(column=0, row=0, padx=2, pady=2)
         scale_text = ttk.Label(scale_frame, text="Displays scale")
-        scale_text.grid(column=0, row=0, rowspan=2, padx=5, pady=5)
+        scale_text.grid(column=0, row=0, rowspan=2, padx=2, pady=2)
         self.scale_scale = ttk.Scale(
             scale_frame,
             from_=2,
@@ -68,16 +72,16 @@ class main(tk.Frame):
             command=self.change_scale,
             value=self.scale,
         )
-        self.scale_scale.grid(column=1, row=0, padx=5, pady=5)
+        self.scale_scale.grid(column=1, row=0, padx=2, pady=2)
         self.scale_value_text = ttk.Label(
             scale_frame, text=str(self.scale_scale.get() * 10) + "%"
         )
-        self.scale_value_text.grid(column=1, row=1, padx=5, pady=5)
+        self.scale_value_text.grid(column=1, row=1, padx=2, pady=2)
         # exposure
         exposure_frame = ttk.Frame(settings_frame)
-        exposure_frame.grid(column=0, row=2, columnspan=2, pady=5)
+        exposure_frame.grid(column=0, row=2, columnspan=2, pady=2)
         exposure_text = ttk.Label(exposure_frame, text="Exposure")
-        exposure_text.grid(column=0, row=0, padx=5, pady=5)
+        exposure_text.grid(column=0, row=0, padx=2, pady=2)
         # self.auto_expo_var = tk.BooleanVar(value=False)
         exposure_auto_chk = ttk.Checkbutton(
             exposure_frame,
@@ -86,7 +90,7 @@ class main(tk.Frame):
             text="auto",
         )
         self.auto_exp_var.set(self.camera.auto_exp)
-        exposure_auto_chk.grid(column=0, row=1, padx=5, pady=5)
+        exposure_auto_chk.grid(column=0, row=1, padx=2, pady=2)
         self.exposure_var = tk.IntVar(value=self.camera.exposure)
         set_exposure_spin = ttk.Spinbox(
             exposure_frame,
@@ -98,13 +102,13 @@ class main(tk.Frame):
             font=self.tk_font,
             width=5,
         )
-        set_exposure_spin.grid(column=0, row=2, padx=5, pady=5)
+        set_exposure_spin.grid(column=0, row=2, padx=2, pady=2)
         # onion
         onion_frame = ttk.Frame(settings_frame)
-        onion_frame.grid(column=0, row=3, columnspan=2, pady=5)
+        onion_frame.grid(column=0, row=3, columnspan=2, pady=2)
         r = 0
         onion_text = ttk.Label(onion_frame, text="Onion skin")
-        onion_text.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        onion_text.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
         # self.enable_onion_var = tk.BooleanVar(value=True)
         onion_chk = ttk.Checkbutton(
@@ -113,11 +117,11 @@ class main(tk.Frame):
             command=lambda: self.set_value("enable_onion"),
             text="enabled",
         )
-        onion_chk.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        onion_chk.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
         # self.opacity_var = tk.IntVar(value=50)
         opacity_text = ttk.Label(onion_frame, text="opacity")
-        opacity_text.grid(column=0, row=r, padx=5, pady=5)
+        opacity_text.grid(column=0, row=r, padx=2, pady=2)
         set_opacity_spin = ttk.Spinbox(
             onion_frame,
             from_=0,
@@ -128,11 +132,11 @@ class main(tk.Frame):
             font=self.tk_font,
             width=5,
         )
-        set_opacity_spin.grid(column=1, row=r, padx=5, pady=5)
+        set_opacity_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         # self.n_onion_var = tk.IntVar(value=2)
         n_onion_text = ttk.Label(onion_frame, text="n")
-        n_onion_text.grid(column=0, row=r, padx=5, pady=5)
+        n_onion_text.grid(column=0, row=r, padx=2, pady=2)
         set_n_onion_spin = ttk.Spinbox(
             onion_frame,
             from_=1,
@@ -143,20 +147,20 @@ class main(tk.Frame):
             font=self.tk_font,
             width=5,
         )
-        set_n_onion_spin.grid(column=1, row=r, padx=5, pady=5)
+        set_n_onion_spin.grid(column=1, row=r, padx=2, pady=2)
         # sequence
         seq_frame = ttk.Frame(settings_frame)
-        seq_frame.grid(column=0, row=4, columnspan=2, pady=10)
+        seq_frame.grid(column=0, row=4, columnspan=2, pady=2)
         seq_text = ttk.Label(seq_frame, text="Sequence")
-        seq_text.grid(column=0, row=0, columnspan=2, padx=5, pady=5)
+        seq_text.grid(column=0, row=0, columnspan=2, padx=2, pady=2)
         seq_name_text = ttk.Label(seq_frame, text="Seq. name" + ": ")
-        seq_name_text.grid(column=0, row=1, padx=5, pady=5)
+        seq_name_text.grid(column=0, row=1, padx=2, pady=2)
         self.set_seq_name_entry = ttk.Entry(seq_frame)
-        self.set_seq_name_entry.grid(column=1, row=1, padx=5, pady=5)
+        self.set_seq_name_entry.grid(column=1, row=1, padx=2, pady=2)
         seq_name_btn = ttk.Button(
             seq_frame, text="Set", command=lambda: self.set_value("seq_name")
         )
-        seq_name_btn.grid(column=0, row=2, columnspan=2, padx=5, pady=5)
+        seq_name_btn.grid(column=0, row=2, columnspan=2, padx=2, pady=2)
         # arduino
         arduino_use_chk = ttk.Checkbutton(
             settings_frame,
@@ -164,129 +168,86 @@ class main(tk.Frame):
             command=lambda: self.set_value("use_arduino"),
             text="arduino",
         )
-        arduino_use_chk.grid(column=0, row=5, padx=5, pady=5)
+        arduino_use_chk.grid(column=0, row=5, padx=2, pady=2)
         # buttons
-        btn_frame = ttk.Frame(self.parent)
-        btn_frame.grid(column=1, row=0, pady=10)
+        btn_frame = ttk.Frame(columns[0])
+        btn_frame.grid(column=0, row=1, pady=2)
         acq_btn = ttk.Button(
             btn_frame, text="Acquisition [a]", command=self.capture_frame
         )
         r = 0
-        acq_btn.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        acq_btn.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
         delete_btn = ttk.Button(btn_frame, text="Delete [d]", command=self.delete_frame)
-        delete_btn.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        delete_btn.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
         prev_btn = ttk.Button(
             btn_frame, text=" Seq. prev [<]", command=lambda: self.set_value("seq_prev")
         )
-        prev_btn.grid(column=0, row=r, padx=5, pady=5)
+        prev_btn.grid(column=0, row=r, padx=2, pady=2)
         next_btn = ttk.Button(
             btn_frame, text=" Seq. next [>]", command=lambda: self.set_value("seq_next")
         )
-        next_btn.grid(column=1, row=r, padx=5, pady=5)
+        next_btn.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         prev_btn = ttk.Button(
             btn_frame,
             text=" Strip prev [n]",
             command=lambda: self.set_value("strip_prev"),
         )
-        prev_btn.grid(column=0, row=r, padx=5, pady=5)
+        prev_btn.grid(column=0, row=r, padx=2, pady=2)
         next_btn = ttk.Button(
             btn_frame,
             text=" Strip next [m]",
             command=lambda: self.set_value("strip_next"),
         )
-        next_btn.grid(column=1, row=r, padx=5, pady=5)
+        next_btn.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         # quit button
         self.style.configure("quit.TButton", font=("Helvetica", 20), foreground="red")
         self.quit_btn = ttk.Button(
             btn_frame, text="Quit", command=self.quit, style="quit.TButton"
         )
-        self.quit_btn.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
-        # scales
-        scales_frame = ttk.Frame(self.parent, relief=tk.SUNKEN, borderwidth=1)
-        scales_frame.grid(column=2, row=0, pady=10)
-        r = 0
-        scale_text = ttk.Label(scales_frame, text="Scales")
-        scale_text.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
-        r += 1
+        self.quit_btn.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
+        # modes
+        mode_frame = ttk.Frame(columns[1])
+        mode_frame.grid(column=0, row=0, pady=2)
+        self.mode_var = tk.IntVar(value=self.mode)
+        mode_rdbtn = []
+        txt = ["Scale", "Annotation"]
+        for i in range(len(txt)):
+            mode_rdbtn.append(
+                ttk.Radiobutton(
+                    mode_frame,
+                    text=txt[i],
+                    variable=self.mode_var,
+                    value=i,
+                    command=lambda: self.set_value("mode"),
+                )
+            )
+            mode_rdbtn[-1].grid(column=0, row=i + 1, pady=2)
+        r = len(txt) + 1
         del_last_btn = ttk.Button(
-            scales_frame,
+            mode_frame,
             text="Delete last [x]",
             command=lambda: self.set_value("del_last"),
         )
-        del_last_btn.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        del_last_btn.grid(column=0, row=r, padx=2, pady=2)
         r += 1
         clear_btn = ttk.Button(
-            scales_frame, text="Clear [c]", command=lambda: self.set_value("clear")
+            mode_frame, text="Clear [c]", command=lambda: self.set_value("clear")
         )
-        clear_btn.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        clear_btn.grid(column=0, row=r, padx=2, pady=2)
         r += 1
-        scale_length_text = ttk.Label(scales_frame, text="Number:")
-        scale_length_text.grid(column=0, row=r, padx=5, pady=5)
-        # self.scale_length_var = tk.IntVar(value=5)
-        set_scale_length_spin = ttk.Spinbox(
-            scales_frame,
-            from_=1,
-            to=100,
-            increment=1,
-            textvariable=self.scale_length_var,
-            command=lambda: self.set_value("scale_length"),
-            font=self.tk_font,
-            width=6,
-        )
-        set_scale_length_spin.grid(column=1, row=r, padx=5, pady=5)
-        r += 1
-        scale_init_length_text = ttk.Label(scales_frame, text="Initial (px):")
-        scale_init_length_text.grid(column=0, row=r, padx=5, pady=5)
-        # self.scale_init_length_var = tk.IntVar(value=2)
-        set_scale_init_length_spin = ttk.Spinbox(
-            scales_frame,
-            from_=1,
-            to=50,
-            increment=1,
-            textvariable=self.scale_init_length_var,
-            command=lambda: self.set_value("scale_init_length"),
-            font=self.tk_font,
-            width=6,
-        )
-        set_scale_init_length_spin.grid(column=1, row=r, padx=5, pady=5)
-        r += 1
-        scale_ratio_text = ttk.Label(scales_frame, text="Ratio:")
-        scale_ratio_text.grid(column=0, row=r, padx=5, pady=5)
-        # self.scale_ratio_var = tk.DoubleVar(value=1.2)
-        set_scale_ratio_spin = ttk.Spinbox(
-            scales_frame,
-            from_=1,
-            to=10,
-            increment=0.1,
-            textvariable=self.scale_ratio_var,
-            command=lambda: self.set_value("scale_ratio"),
-            font=self.tk_font,
-            width=6,
-        )
-        set_scale_ratio_spin.grid(column=1, row=r, padx=5, pady=5)
-        r += 1
-        # self.scale_inverted_var = tk.BooleanVar(value=False)
-        scale_inverted_chk = ttk.Checkbutton(
-            scales_frame,
-            variable=self.scale_inverted_var,
-            command=lambda: self.set_value("invert"),
-            text="Inverted",
-        )
-        scale_inverted_chk.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
-        r += 1
-        color_scale_frame = ttk.Frame(scales_frame, relief=tk.SUNKEN, borderwidth=1)
-        color_scale_frame.grid(column=0, row=r, columnspan=2, padx=10, pady=5)
+        color_scale_frame = ttk.Frame(mode_frame, relief=tk.SUNKEN, borderwidth=1)
+        color_scale_frame.grid(column=0, row=r, padx=10, pady=2)
         rgb = self.rgbtohex(self.color_scale)
         self.color_scale_canvas = tk.Canvas(
             color_scale_frame, bg=rgb, width=100, height=50
         )
-        self.color_scale_canvas.grid(column=0, row=0, rowspan=3, padx=5, pady=2)
+        self.color_scale_canvas.grid(column=0, row=0, rowspan=3, padx=2, pady=2)
         color_scale_R_label = ttk.Label(color_scale_frame, text="R")
-        color_scale_R_label.grid(column=1, row=0, padx=5, pady=2)
+        color_scale_R_label.grid(column=1, row=0, padx=2, pady=2)
         self.color_scale_var = []
         self.color_scale_var.append(tk.IntVar())
         color_scale_R_spin = ttk.Spinbox(
@@ -299,10 +260,10 @@ class main(tk.Frame):
             command=lambda: self.set_value("color_scale"),
             font=self.tk_font,
         )
-        color_scale_R_spin.grid(column=2, row=0, padx=5, pady=2)
+        color_scale_R_spin.grid(column=2, row=0, padx=2, pady=2)
         self.color_scale_var[0].set(self.color_scale[0])
         color_scale_G_label = ttk.Label(color_scale_frame, text="G")
-        color_scale_G_label.grid(column=1, row=1, padx=5, pady=2)
+        color_scale_G_label.grid(column=1, row=1, padx=2, pady=2)
         self.color_scale_var.append(tk.IntVar())
         color_scale_G_spin = ttk.Spinbox(
             color_scale_frame,
@@ -314,10 +275,10 @@ class main(tk.Frame):
             command=lambda: self.set_value("color_scale"),
             font=self.tk_font,
         )
-        color_scale_G_spin.grid(column=2, row=1, padx=5, pady=2)
+        color_scale_G_spin.grid(column=2, row=1, padx=2, pady=2)
         self.color_scale_var[1].set(self.color_scale[1])
         color_scale_B_label = ttk.Label(color_scale_frame, text="B")
-        color_scale_B_label.grid(column=1, row=2, padx=5, pady=2)
+        color_scale_B_label.grid(column=1, row=2, padx=2, pady=2)
         self.color_scale_var.append(tk.IntVar())
         color_scale_B_spin = ttk.Spinbox(
             color_scale_frame,
@@ -329,14 +290,76 @@ class main(tk.Frame):
             command=lambda: self.set_value("color_scale"),
             font=self.tk_font,
         )
-        color_scale_B_spin.grid(column=2, row=2, padx=5, pady=2)
+        color_scale_B_spin.grid(column=2, row=2, padx=2, pady=2)
         self.color_scale_var[2].set(self.color_scale[2])
+        # scales
+        scales_frame = ttk.Frame(columns[1], relief=tk.SUNKEN, borderwidth=1)
+        scales_frame.grid(column=0, row=1, pady=2)
+        r = 0
+        scale_text = ttk.Label(scales_frame, text="Scales")
+        scale_text.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
+        r += 1
+        scale_length_text = ttk.Label(scales_frame, text="Number:")
+        scale_length_text.grid(column=0, row=r, padx=2, pady=2)
+        # self.scale_length_var = tk.IntVar(value=5)
+        set_scale_length_spin = ttk.Spinbox(
+            scales_frame,
+            from_=1,
+            to=100,
+            increment=1,
+            textvariable=self.scale_length_var,
+            command=lambda: self.set_value("scale_length"),
+            font=self.tk_font,
+            width=6,
+        )
+        set_scale_length_spin.grid(column=1, row=r, padx=2, pady=2)
+        r += 1
+        scale_init_length_text = ttk.Label(scales_frame, text="Initial (px):")
+        scale_init_length_text.grid(column=0, row=r, padx=2, pady=2)
+        # self.scale_init_length_var = tk.IntVar(value=2)
+        set_scale_init_length_spin = ttk.Spinbox(
+            scales_frame,
+            from_=1,
+            to=50,
+            increment=1,
+            textvariable=self.scale_init_length_var,
+            command=lambda: self.set_value("scale_init_length"),
+            font=self.tk_font,
+            width=6,
+        )
+        set_scale_init_length_spin.grid(column=1, row=r, padx=2, pady=2)
+        r += 1
+        scale_ratio_text = ttk.Label(scales_frame, text="Ratio:")
+        scale_ratio_text.grid(column=0, row=r, padx=2, pady=2)
+        # self.scale_ratio_var = tk.DoubleVar(value=1.2)
+        set_scale_ratio_spin = ttk.Spinbox(
+            scales_frame,
+            from_=1,
+            to=10,
+            increment=0.1,
+            textvariable=self.scale_ratio_var,
+            command=lambda: self.set_value("scale_ratio"),
+            font=self.tk_font,
+            width=6,
+        )
+        set_scale_ratio_spin.grid(column=1, row=r, padx=2, pady=2)
+        r += 1
+        # self.scale_inverted_var = tk.BooleanVar(value=False)
+        scale_inverted_chk = ttk.Checkbutton(
+            scales_frame,
+            variable=self.scale_inverted_var,
+            command=lambda: self.set_value("invert"),
+            text="Inverted",
+        )
+        scale_inverted_chk.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
+        r += 1
+
         # selected scale
-        selected_scale_frame = ttk.Frame(self.parent, relief=tk.SUNKEN, borderwidth=1)
-        selected_scale_frame.grid(column=2, row=1, pady=10)
+        selected_scale_frame = ttk.Frame(columns[1], relief=tk.SUNKEN, borderwidth=1)
+        selected_scale_frame.grid(column=0, row=2, pady=2)
         r = 0
         selected_scale_text = ttk.Label(selected_scale_frame, text="Selected Scale")
-        selected_scale_text.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        selected_scale_text.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
         self.selected_scale_var = tk.IntVar(value=0)
         self.set_selected_scale_spin = ttk.Spinbox(
@@ -349,10 +372,10 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        self.set_selected_scale_spin.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        self.set_selected_scale_spin.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
         selected_scale_length_text = ttk.Label(selected_scale_frame, text="Number:")
-        selected_scale_length_text.grid(column=0, row=r, padx=5, pady=5)
+        selected_scale_length_text.grid(column=0, row=r, padx=2, pady=2)
         self.selected_scale_length_var = tk.IntVar(value=0)
         set_selected_scale_length_spin = ttk.Spinbox(
             selected_scale_frame,
@@ -364,12 +387,12 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_selected_scale_length_spin.grid(column=1, row=r, padx=5, pady=5)
+        set_selected_scale_length_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         selected_scale_init_length_text = ttk.Label(
             selected_scale_frame, text="Initial (px):"
         )
-        selected_scale_init_length_text.grid(column=0, row=r, padx=5, pady=5)
+        selected_scale_init_length_text.grid(column=0, row=r, padx=2, pady=2)
         self.selected_scale_init_length_var = tk.IntVar(value=0)
         set_selected_scale_init_length_spin = ttk.Spinbox(
             selected_scale_frame,
@@ -381,10 +404,10 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_selected_scale_init_length_spin.grid(column=1, row=r, padx=5, pady=5)
+        set_selected_scale_init_length_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         selected_scale_ratio_text = ttk.Label(selected_scale_frame, text="Ratio:")
-        selected_scale_ratio_text.grid(column=0, row=r, padx=5, pady=5)
+        selected_scale_ratio_text.grid(column=0, row=r, padx=2, pady=2)
         self.selected_scale_ratio_var = tk.DoubleVar(value=1)
         set_selected_scale_ratio_spin = ttk.Spinbox(
             selected_scale_frame,
@@ -396,7 +419,7 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_selected_scale_ratio_spin.grid(column=1, row=r, padx=5, pady=5)
+        set_selected_scale_ratio_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         self.selected_scale_inverted_var = tk.BooleanVar(value=False)
         selected_scale_inverted_chk = ttk.Checkbutton(
@@ -405,21 +428,21 @@ class main(tk.Frame):
             command=lambda: self.set_value("selected_invert"),
             text="Inverted",
         )
-        selected_scale_inverted_chk.grid(column=0, row=r, columnspan=2, padx=5, pady=5)
+        selected_scale_inverted_chk.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
         color_selected_scale_frame = ttk.Frame(
             selected_scale_frame, relief=tk.SUNKEN, borderwidth=1
         )
-        color_selected_scale_frame.grid(column=0, row=r, columnspan=2, padx=10, pady=5)
+        color_selected_scale_frame.grid(column=0, row=r, columnspan=2, padx=10, pady=2)
         rgb = self.rgbtohex(self.color_selected_scale)
         self.color_selected_scale_canvas = tk.Canvas(
             color_selected_scale_frame, bg=rgb, width=100, height=50
         )
         self.color_selected_scale_canvas.grid(
-            column=0, row=0, rowspan=3, padx=5, pady=2
+            column=0, row=0, rowspan=3, padx=2, pady=2
         )
         color_selected_scale_R_label = ttk.Label(color_selected_scale_frame, text="R")
-        color_selected_scale_R_label.grid(column=1, row=0, padx=5, pady=2)
+        color_selected_scale_R_label.grid(column=1, row=0, padx=2, pady=2)
         self.color_selected_scale_var = []
         self.color_selected_scale_var.append(tk.IntVar())
         color_selected_scale_R_spin = ttk.Spinbox(
@@ -432,10 +455,10 @@ class main(tk.Frame):
             command=lambda: self.set_value("color_selected_scale"),
             font=self.tk_font,
         )
-        color_selected_scale_R_spin.grid(column=2, row=0, padx=5, pady=2)
+        color_selected_scale_R_spin.grid(column=2, row=0, padx=2, pady=2)
         self.color_selected_scale_var[0].set(self.color_selected_scale[0])
         color_selected_scale_G_label = ttk.Label(color_selected_scale_frame, text="G")
-        color_selected_scale_G_label.grid(column=1, row=1, padx=5, pady=2)
+        color_selected_scale_G_label.grid(column=1, row=1, padx=2, pady=2)
         self.color_selected_scale_var.append(tk.IntVar())
         color_selected_scale_G_spin = ttk.Spinbox(
             color_selected_scale_frame,
@@ -447,10 +470,10 @@ class main(tk.Frame):
             command=lambda: self.set_value("color_selected_scale"),
             font=self.tk_font,
         )
-        color_selected_scale_G_spin.grid(column=2, row=1, padx=5, pady=2)
+        color_selected_scale_G_spin.grid(column=2, row=1, padx=2, pady=2)
         self.color_selected_scale_var[1].set(self.color_selected_scale[1])
         color_selected_scale_B_label = ttk.Label(color_selected_scale_frame, text="B")
-        color_selected_scale_B_label.grid(column=1, row=2, padx=5, pady=2)
+        color_selected_scale_B_label.grid(column=1, row=2, padx=2, pady=2)
         self.color_selected_scale_var.append(tk.IntVar())
         color_selected_scale_B_spin = ttk.Spinbox(
             color_selected_scale_frame,
@@ -462,7 +485,7 @@ class main(tk.Frame):
             command=lambda: self.set_value("color_selected_scale"),
             font=self.tk_font,
         )
-        color_selected_scale_B_spin.grid(column=2, row=2, padx=5, pady=2)
+        color_selected_scale_B_spin.grid(column=2, row=2, padx=2, pady=2)
         self.color_selected_scale_var[2].set(self.color_selected_scale[2])
         self.set_selected_scale_spin.configure(state="disable")
 
@@ -485,11 +508,16 @@ class main(tk.Frame):
         self.scales = []
         self.current_scale = []
         self.new_scale = True
+        self.new_annotation = True
         self.mouse_coords = []
+        self.mouse_coords_annotation = []
+        self.mouse_coords_annotations = []
         self.color_selected_scale = [255, 255, 255]
         self.selected_scale = 0
         self.scale_settings = []
         self.set_settings = False
+        self.mode = 0
+        self.drawing = False
         self.read_config()
         # self.camera = camera.Camera(w=self.width, h=self.height)
         self.camera.start_stream(0)
@@ -553,24 +581,33 @@ class main(tk.Frame):
             elif k == ord("d"):  # delete frame
                 self.delete_frame()
             elif k == ord("x"):  # delete last point
-                if len(self.scales) > 0:
-                    self.scales.pop(-1)
-                    self.scale_settings.pop(-1)
-                if len(self.scales) > 0:
-                    if self.selected_scale == len(self.scale_settings):
-                        self.selected_scale -= 1
+                if self.mode == 0:
+                    if len(self.scales) > 0:
+                        self.scales.pop(-1)
+                        self.scale_settings.pop(-1)
+                    if len(self.scales) > 0:
+                        if self.selected_scale == len(self.scale_settings):
+                            self.selected_scale -= 1
+                            self.selected_scale_var.set(self.selected_scale)
+                            self.set_value("selected_scale")
+                    else:
+                        self.selected_scale = 0
                         self.selected_scale_var.set(self.selected_scale)
-                        self.set_value("selected_scale")
-                else:
+                        self.set_selected_scale_spin.config(state="disable")
+                elif self.mode == 1:
+                    if len(self.mouse_coords_annotations) > 0:
+                        self.mouse_coords_annotations.pop(-1)
+            elif k == ord("c"):  # clear points
+                if self.mode == 0:
+                    self.scales = []
+                    self.set_selected_scale_spin.config(state="disable")
+                    self.scale_settings = []
                     self.selected_scale = 0
                     self.selected_scale_var.set(self.selected_scale)
-                    self.set_selected_scale_spin.config(state="disable")
-            elif k == ord("c"):  # clear points
-                self.scales = []
-                self.set_selected_scale_spin.config(state="disable")
-                self.scale_settings = []
-                self.selected_scale = 0
-                self.selected_scale_var.set(self.selected_scale)
+                    self.current_scale = []
+                elif self.mode == 1:
+                    self.mouse_coords_annotation = []
+                    self.mouse_coords_annotations = []
             elif k == ord("o"):  # double click
                 self.new_scale = True
                 self.mouse_coords = []
@@ -647,6 +684,8 @@ class main(tk.Frame):
                         self.height = config.get("display", {}).get("height")
                         self.camera = camera.Camera(w=self.width, h=self.height)
                         self.scale = config.get("display", {}).get("scale")
+                        # parameters
+                        self.mode = config.get("parameters", {}).get("mode")
                         # camera
                         camera_source = config.get("camera", {}).get("source")
                         self.camera.start_stream(camera_source)
@@ -713,6 +752,9 @@ class main(tk.Frame):
         config["display"]["width"] = self.width
         config["display"]["height"] = self.height
         config["display"]["scale"] = int(self.scale_scale.get())
+        # parameters
+        config["parameters"] = {}
+        config["parameters"]["mode"] = self.mode
         # scales
         config["scales"] = {}
         config["scales"]["ratio"] = self.scale_ratio_var.get()
@@ -755,21 +797,31 @@ class main(tk.Frame):
 
     def mouse_click(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
-            if self.new_scale:
-                self.new_scale = False
-                self.current_scale.append(
-                    [int(x * 10 / self.scale), int(y * 10 / self.scale)]
-                )
-            else:
-                self.current_scale.append(
-                    [int(x * 10 / self.scale), int(y * 10 / self.scale)]
-                )
+            if self.mode == 0:
+                if self.new_scale:
+                    self.new_scale = False
+                    self.current_scale = []
+                    self.current_scale.append(
+                        [int(x * 10 / self.scale), int(y * 10 / self.scale)]
+                    )
+                else:
+                    self.current_scale.append(
+                        [int(x * 10 / self.scale), int(y * 10 / self.scale)]
+                    )
+            elif self.mode == 1:
+                if self.new_annotation:
+                    self.new_annotation = False
+                    self.drawing = True
+                    self.mouse_coords_annotation = []
+                    self.mouse_coords_annotation.append(
+                        [int(x * 10 / self.scale), int(y * 10 / self.scale)]
+                    )
         elif event == cv2.EVENT_LBUTTONDBLCLK:
             self.new_scale = True
             self.mouse_coords = []
             self.scales.append(self.current_scale)
             self.set_settings = True
-            self.current_scale = []
+            # self.current_scale = []
         elif event == cv2.EVENT_RBUTTONDOWN:
             self.new_scale = True
             self.mouse_coords = []
@@ -777,8 +829,27 @@ class main(tk.Frame):
             self.set_settings = True
             self.current_scale = []
         elif event == cv2.EVENT_MOUSEMOVE:
-            if not self.new_scale:
-                self.mouse_coords = [int(x * 10 / self.scale), int(y * 10 / self.scale)]
+            if self.mode == 0:
+                if not self.new_scale:
+                    self.mouse_coords = [
+                        int(x * 10 / self.scale),
+                        int(y * 10 / self.scale),
+                    ]
+            elif self.mode == 1:
+                if self.drawing:
+                    self.mouse_coords_annotation.append(
+                        [int(x * 10 / self.scale), int(y * 10 / self.scale)]
+                    )
+        elif event == cv2.EVENT_LBUTTONUP:
+            if self.mode == 1:
+                self.drawing = False
+                self.new_annotation = True
+                self.mouse_coords_annotations.append(self.mouse_coords_annotation)
+                self.mouse_coords_annotation = []
+                # self.mouse_coords = []
+                # self.mouse_coords_annotation.append(
+                #    [int(x * 10 / self.scale), int(y * 10 / self.scale)]
+                # )
 
     def display_camera(self):
         frame_copy = self.frame.copy()
@@ -915,10 +986,15 @@ class main(tk.Frame):
                     output = self.display_scale_multiple(
                         s, output, self.scale_settings[i]
                     )
+                elif self.scale_settings[i][0] == 2:
+                    output = self.display_scale_multiple_half(
+                        s, output, self.scale_settings[i]
+                    )
                 else:
                     output = self.display_scale_multiple_ratio(
                         s, output, self.scale_settings[i]
                     )
+        output = self.display_annotation(output)
         cv2.imshow(
             "Monitoring",
             cv2.resize(
@@ -929,6 +1005,29 @@ class main(tk.Frame):
                 ),
             ),
         )
+
+    def display_annotation(self, img):
+        col = (self.color_scale[2], self.color_scale[1], self.color_scale[0])
+        if len(self.mouse_coords_annotation) > 1:
+            for i in range(len(self.mouse_coords_annotation) - 1):
+                cv2.line(
+                    img,
+                    self.mouse_coords_annotation[i],
+                    self.mouse_coords_annotation[i + 1],
+                    color=col,
+                    thickness=2,
+                )
+        for a in self.mouse_coords_annotations:
+            if len(a) > 1:
+                for i in range(len(a) - 1):
+                    cv2.line(
+                        img,
+                        a[i],
+                        a[i + 1],
+                        color=col,
+                        thickness=2,
+                    )
+        return img
 
     def display_scale(self, pos_xy, img):
         col = (self.color_scale[2], self.color_scale[1], self.color_scale[0])
@@ -1010,7 +1109,7 @@ class main(tk.Frame):
                     img,
                     pos_xy[-1],
                     self.mouse_coords,
-                    list(reversed(self.color_scale)),
+                    col,
                     2,
                 )
         return img
@@ -1196,6 +1295,144 @@ class main(tk.Frame):
                             l0 = l_current - ls
         return img
 
+    def display_scale_multiple_half(self, pos_xy, img, settings):
+        col = (settings[3][2], settings[3][1], settings[3][0])
+        li = settings[1]  # used as l min
+        if len(pos_xy) >= 2:
+            d = 5
+            le = 0
+            parts_l = []
+            parts_l.append(0)
+            for i in range(len(pos_xy) - 1):
+                pA = (pos_xy[i][0], pos_xy[i][1])
+                pB = (pos_xy[i + 1][0], pos_xy[i + 1][1])
+                le += np.sqrt((pA[0] - pB[0]) ** 2 + (pA[1] - pB[1]) ** 2)
+                parts_l.append(le)
+            lm = parts_l[-1]
+            l_half = parts_l[-1]
+            while l_half > li:
+                l_half = l_half / 2
+                if settings[4]:
+                    lm = parts_l[-1] - l_half
+                else:
+                    lm = l_half
+                current_part = 0
+                for i in range(len(parts_l) - 1):
+                    if lm >= parts_l[i] and lm < parts_l[i + 1]:
+                        current_part = i
+                        break
+                l = lm - parts_l[current_part]
+                if pos_xy[i][0] == pos_xy[i + 1][0]:
+                    x = pos_xy[i][0]
+                    pA = (x, pos_xy[i][1])
+                    pB = (x, pos_xy[i + 1][1])
+                    if pos_xy[i][1] < pos_xy[i + 1][1]:
+                        inc = 1
+                    else:
+                        inc = -1
+                    cv2.line(img, pA, pB, col, 2)
+                    p1 = (x - d, int(pA[1] + inc * int(l)))
+                    p2 = (x + d, int(pA[1] + inc * int(l)))
+                    cv2.line(img, p1, p2, col, 2)
+                elif pos_xy[i][1] == pos_xy[i + 1][1]:
+                    y = pos_xy[i][1]
+                    pA = (pos_xy[i][0], y)
+                    pB = (pos_xy[i + 1][0], y)
+                    if pos_xy[i][0] < pos_xy[i + 1][0]:
+                        inc = 1
+                    else:
+                        inc = -1
+                    cv2.line(img, pA, pB, col, 2)
+                    p1 = (int(pA[0] + inc * int(l)), y - d)
+                    p2 = (int(pA[0] + inc * int(l)), y + d)
+                    cv2.line(img, p1, p2, col, 2)
+
+                else:
+                    pA = (pos_xy[current_part][0], pos_xy[current_part][1])
+                    pB = (pos_xy[current_part + 1][0], pos_xy[current_part + 1][1])
+                    if pos_xy[current_part][0] < pos_xy[current_part + 1][0]:
+                        inc = 1
+                    else:
+                        inc = -1
+                    a = (pA[1] - pB[1]) / (pA[0] - pB[0])
+                    b = pA[1] - a * pA[0]
+                    b1 = b + d * np.sqrt(1 + a * a)
+                    b2 = b - d * np.sqrt(1 + a * a)
+                    cv2.line(img, pA, pB, col, 2)
+                    x = pA[0] + inc * l / np.sqrt(1 + a * a)
+                    y = a * x + b
+                    b3 = y + 1 / a * x
+                    x1 = (b3 - b1) * a / (1 + a * a)
+                    x2 = (b3 - b2) * a / (1 + a * a)
+                    y1 = a * x1 + b1
+                    y2 = a * x2 + b2
+                    p1 = (int(x1), int(y1))
+                    p2 = (int(x2), int(y2))
+                    cv2.line(img, p1, p2, col, 2)
+            pA = (pos_xy[-2][0], pos_xy[-2][1])
+            pB = (pos_xy[-1][0], pos_xy[-1][1])
+            cv2.line(img, pA, pB, col, 2)
+            if pos_xy[0][0] == pos_xy[1][0]:
+                x = pos_xy[0][0]
+                y = pos_xy[0][1]
+                p1 = (int(x - d), int(y))
+                p2 = (int(x + d), int(y))
+                cv2.line(img, p1, p2, col, 2)
+            elif pos_xy[0][1] == pos_xy[1][1]:
+                x = pos_xy[0][0]
+                y = pos_xy[0][1]
+                p1 = (int(x), int(y - d))
+                p2 = (int(x), int(y + d))
+                cv2.line(img, p1, p2, col, 2)
+            else:
+                pA = (pos_xy[0][0], pos_xy[0][1])
+                pB = (pos_xy[1][0], pos_xy[1][1])
+                a = (pA[1] - pB[1]) / (pA[0] - pB[0])
+                b = pA[1] - a * pA[0]
+                b1 = b + d * np.sqrt(1 + a * a)
+                b2 = b - d * np.sqrt(1 + a * a)
+                x = pA[0]
+                y = a * x + b
+                b3 = y + 1 / a * x
+                x1 = (b3 - b1) * a / (1 + a * a)
+                x2 = (b3 - b2) * a / (1 + a * a)
+                y1 = a * x1 + b1
+                y2 = a * x2 + b2
+                p1 = (int(x1), int(y1))
+                p2 = (int(x2), int(y2))
+                cv2.line(img, p1, p2, col, 2)
+            if pos_xy[-2][0] == pos_xy[-1][0]:
+                x = pos_xy[-1][0]
+                y = pos_xy[-1][1]
+                p1 = (int(x - d), int(y))
+                p2 = (int(x + d), int(y))
+                cv2.line(img, p1, p2, col, 2)
+            elif pos_xy[-2][1] == pos_xy[-1][1]:
+                x = pos_xy[-1][0]
+                y = pos_xy[-1][1]
+                p1 = (int(x), int(y - d))
+                p2 = (int(x), int(y + d))
+                cv2.line(img, p1, p2, col, 2)
+            else:
+                pA = (pos_xy[-2][0], pos_xy[-2][1])
+                pB = (pos_xy[-1][0], pos_xy[-1][1])
+                # cv2.line(img, pA, pB, col, 2)
+                a = (pA[1] - pB[1]) / (pA[0] - pB[0])
+                b = pA[1] - a * pA[0]
+                b1 = b + d * np.sqrt(1 + a * a)
+                b2 = b - d * np.sqrt(1 + a * a)
+                x = pB[0]
+                y = a * x + b
+                b3 = y + 1 / a * x
+                x1 = (b3 - b1) * a / (1 + a * a)
+                x2 = (b3 - b2) * a / (1 + a * a)
+                y1 = a * x1 + b1
+                y2 = a * x2 + b2
+                p1 = (int(x1), int(y1))
+                p2 = (int(x2), int(y2))
+                cv2.line(img, p1, p2, col, 2)
+        return img
+
     def display_scale_ratio(self, pos_xy, img):
         r = self.scale_ratio_var.get()
         l0 = self.scale_init_length_var.get()
@@ -1352,6 +1589,8 @@ class main(tk.Frame):
     def set_value(self, name):
         """Set values (general method for widgets)"""
         match name:
+            case "mode":
+                self.mode = self.mode_var.get()
             case "use_arduino":
                 if self.use_arduino_var.get():
                     self.arduino = arduino.Arduino(self.port)
@@ -1391,24 +1630,33 @@ class main(tk.Frame):
             case "strip_prev":
                 self.shift_strip += 1
             case "del_last":  # delete last point
-                if len(self.scales) > 0:
-                    self.scales.pop(-1)
-                    self.scale_settings.pop(-1)
-                if len(self.scales) > 0:
-                    if self.selected_scale == len(self.scale_settings):
-                        self.selected_scale -= 1
+                if self.mode == 0:
+                    if len(self.scales) > 0:
+                        self.scales.pop(-1)
+                        self.scale_settings.pop(-1)
+                    if len(self.scales) > 0:
+                        if self.selected_scale == len(self.scale_settings):
+                            self.selected_scale -= 1
+                            self.selected_scale_var.set(self.selected_scale)
+                            self.set_value("selected_scale")
+                    else:
+                        self.selected_scale = 0
                         self.selected_scale_var.set(self.selected_scale)
-                        self.set_value("selected_scale")
-                else:
+                        self.set_selected_scale_spin.config(state="disable")
+                elif self.mode == 1:
+                    if len(self.mouse_coords_annotations) > 0:
+                        self.mouse_coords_annotations.pop(-1)
+            case "clear":  # clear points
+                if self.mode == 0:
+                    self.scales = []
+                    self.set_selected_scale_spin.config(state="disable")
+                    self.scale_settings = []
                     self.selected_scale = 0
                     self.selected_scale_var.set(self.selected_scale)
-                    self.set_selected_scale_spin.config(state="disable")
-            case "clear":  # clear points
-                self.scales = []
-                self.set_selected_scale_spin.config(state="disable")
-                self.scale_settings = []
-                self.selected_scale = 0
-                self.selected_scale_var.set(self.selected_scale)
+                    self.current_scale = []
+                elif self.mode == 1:
+                    self.mouse_coords_annotation = []
+                    self.mouse_coords_annotations = []
             case "selected_scale":
                 self.selected_scale = self.selected_scale_var.get()
                 self.selected_scale_ratio_var.set(

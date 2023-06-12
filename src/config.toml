@@ -8,11 +8,14 @@ width = 1920
 height = 1080
 scale = 5
 
+[parameters]
+mode = 0
+
 [scales]
-ratio = 1.2
-l_init = 10
+ratio = 2.0
+l_init = 5
 n = 5
-color = [ 255, 255, 255,]
+color = [ 100, 100, 255,]
 invert = false
 
 [onion]
