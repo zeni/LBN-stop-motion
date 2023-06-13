@@ -302,10 +302,26 @@ class main(tk.Frame):
         path_text = ttk.Label(paths_frame, text="paths")
         path_text.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
+        path_type_text = ttk.Label(paths_frame, text="Type")
+        path_type_text.grid(column=0, row=r, padx=2, pady=2)
+        types = ["Linear", "Ratio", "Half"]
+        self.path_type_var = tk.StringVar()
+        self.path_type_menu = ttk.Combobox(
+            paths_frame,
+            values=types,
+            textvariable=self.path_type_var,
+            state="readonly",
+            font=self.tk_font,
+            width=10,
+        )
+        self.path_type_menu.current(0)
+        self.path_type_menu.bind("<<ComboboxSelected>>", self.select_path_type)
+        self.path_type_menu.grid(column=1, row=r, padx=2, pady=2)
+        r += 1
         path_length_text = ttk.Label(paths_frame, text="Number:")
         path_length_text.grid(column=0, row=r, padx=2, pady=2)
         # self.path_segments_var = tk.IntVar(value=5)
-        set_path_length_spin = ttk.Spinbox(
+        self.set_path_length_spin = ttk.Spinbox(
             paths_frame,
             from_=1,
             to=100,
@@ -315,12 +331,11 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_path_length_spin.grid(column=1, row=r, padx=2, pady=2)
+        self.set_path_length_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         path_init_length_text = ttk.Label(paths_frame, text="Initial (px):")
         path_init_length_text.grid(column=0, row=r, padx=2, pady=2)
-        # self.path_min_length_var = tk.IntVar(value=2)
-        set_path_init_length_spin = ttk.Spinbox(
+        self.set_path_init_length_spin = ttk.Spinbox(
             paths_frame,
             from_=1,
             to=50,
@@ -330,12 +345,11 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_path_init_length_spin.grid(column=1, row=r, padx=2, pady=2)
+        self.set_path_init_length_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         path_ratio_text = ttk.Label(paths_frame, text="Ratio:")
         path_ratio_text.grid(column=0, row=r, padx=2, pady=2)
-        # self.path_ratio_var = tk.DoubleVar(value=1.2)
-        set_path_ratio_spin = ttk.Spinbox(
+        self.set_path_ratio_spin = ttk.Spinbox(
             paths_frame,
             from_=1,
             to=10,
@@ -345,18 +359,17 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_path_ratio_spin.grid(column=1, row=r, padx=2, pady=2)
+        self.set_path_ratio_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
-        # self.path_inverted_var = tk.BooleanVar(value=False)
-        path_inverted_chk = ttk.Checkbutton(
+        self.path_inverted_chk = ttk.Checkbutton(
             paths_frame,
             variable=self.path_inverted_var,
             command=lambda: self.set_value("invert"),
             text="Inverted",
         )
-        path_inverted_chk.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
+        self.path_inverted_chk.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
-
+        self.select_path_type(None)
         # selected path
         selected_path_frame = ttk.Frame(columns[1], relief=tk.SUNKEN, borderwidth=1)
         selected_path_frame.grid(column=0, row=2, pady=2)
@@ -377,10 +390,27 @@ class main(tk.Frame):
         )
         self.set_selected_path_spin.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
         r += 1
+        selected_path_type_text = ttk.Label(selected_path_frame, text="Type")
+        selected_path_type_text.grid(column=0, row=r, padx=2, pady=2)
+        self.selected_path_type_var = tk.StringVar()
+        self.selected_path_type_menu = ttk.Combobox(
+            selected_path_frame,
+            values=types,
+            textvariable=self.selected_path_type_var,
+            state="readonly",
+            font=self.tk_font,
+            width=10,
+        )
+        self.selected_path_type_menu.current(0)
+        self.selected_path_type_menu.bind(
+            "<<ComboboxSelected>>", self.select_selected_path_type
+        )
+        self.selected_path_type_menu.grid(column=1, row=r, padx=2, pady=2)
+        r += 1
         selected_path_length_text = ttk.Label(selected_path_frame, text="Number:")
         selected_path_length_text.grid(column=0, row=r, padx=2, pady=2)
         self.selected_path_segments_var = tk.IntVar(value=0)
-        set_selected_path_length_spin = ttk.Spinbox(
+        self.set_selected_path_length_spin = ttk.Spinbox(
             selected_path_frame,
             from_=0,
             to=100,
@@ -390,14 +420,14 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_selected_path_length_spin.grid(column=1, row=r, padx=2, pady=2)
+        self.set_selected_path_length_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         selected_path_init_length_text = ttk.Label(
             selected_path_frame, text="Initial (px):"
         )
         selected_path_init_length_text.grid(column=0, row=r, padx=2, pady=2)
         self.selected_path_min_length_var = tk.IntVar(value=0)
-        set_selected_path_init_length_spin = ttk.Spinbox(
+        self.set_selected_path_init_length_spin = ttk.Spinbox(
             selected_path_frame,
             from_=1,
             to=50,
@@ -407,12 +437,12 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_selected_path_init_length_spin.grid(column=1, row=r, padx=2, pady=2)
+        self.set_selected_path_init_length_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         selected_path_ratio_text = ttk.Label(selected_path_frame, text="Ratio:")
         selected_path_ratio_text.grid(column=0, row=r, padx=2, pady=2)
         self.selected_path_ratio_var = tk.DoubleVar(value=1)
-        set_selected_path_ratio_spin = ttk.Spinbox(
+        self.set_selected_path_ratio_spin = ttk.Spinbox(
             selected_path_frame,
             from_=1,
             to=10,
@@ -422,16 +452,18 @@ class main(tk.Frame):
             font=self.tk_font,
             width=6,
         )
-        set_selected_path_ratio_spin.grid(column=1, row=r, padx=2, pady=2)
+        self.set_selected_path_ratio_spin.grid(column=1, row=r, padx=2, pady=2)
         r += 1
         self.selected_path_inverted_var = tk.BooleanVar(value=False)
-        selected_path_inverted_chk = ttk.Checkbutton(
+        self.selected_path_inverted_chk = ttk.Checkbutton(
             selected_path_frame,
             variable=self.selected_path_inverted_var,
             command=lambda: self.set_value("selected_invert"),
             text="Inverted",
         )
-        selected_path_inverted_chk.grid(column=0, row=r, columnspan=2, padx=2, pady=2)
+        self.selected_path_inverted_chk.grid(
+            column=0, row=r, columnspan=2, padx=2, pady=2
+        )
         r += 1
         color_selected_path_frame = ttk.Frame(
             selected_path_frame, relief=tk.SUNKEN, borderwidth=1
@@ -553,8 +585,7 @@ class main(tk.Frame):
                 if self.frame is None:
                     raise Exception("No frame captured!")
                 else:
-                    self.update_paths()
-                    self.update_annotations()
+                    self.update()
                     self.display_capture()
             if self.use_arduino_var.get():
                 if self.arduino.check_capture():
@@ -625,7 +656,7 @@ class main(tk.Frame):
             # continue loop
             self.parent.after(2, self.loop)
 
-    def update_paths(self):
+    def update(self):
         if self.mode == Mode.PATH:
             if self.path_end:
                 self.path_end = False
@@ -635,11 +666,11 @@ class main(tk.Frame):
                 self.set_selected_path_spin.config(to=len(self.paths.paths) - 1)
             if self.new_path:
                 self.new_path = False
-                r = self.path_ratio_var.get()
-                if r == 1:
+                t = self.path_type_menu.current()
+                if t == 0:
                     type = PathType.LINEAR
                     motion = PathMotion.CONST
-                elif r == 2:
+                elif t == 2:
                     type = PathType.HALF
                     motion = PathMotion.ACC
                 else:
@@ -649,7 +680,7 @@ class main(tk.Frame):
                     if self.path_inverted_var.get():
                         motion = PathMotion.DEC
                 self.paths.new_path(
-                    r,
+                    self.path_ratio_var.get(),
                     self.path_min_length_var.get(),
                     self.path_segments_var.get(),
                     self.draw_color.copy(),
@@ -657,9 +688,7 @@ class main(tk.Frame):
                     motion,
                 )
                 self.paths.append_pos(self.mouse_coords)
-
-    def update_annotations(self):
-        if self.mode == Mode.ANNO:
+        elif self.mode == Mode.ANNO:
             if self.new_annotation:
                 self.new_annotation = False
                 self.annos.new_annotation(
@@ -1153,6 +1182,13 @@ class main(tk.Frame):
                     self.selected_path_inverted_var.set(True)
                 else:
                     self.selected_path_inverted_var.set(False)
+                if self.paths.paths[self.selected_path].type == PathType.LINEAR:
+                    self.selected_path_type_menu.current(0)
+                elif self.paths.paths[self.selected_path].type == PathType.HALF:
+                    self.selected_path_type_menu.current(2)
+                else:
+                    self.selected_path_type_menu.current(1)
+                self.select_selected_path_type(None)
             case "selected_path_segments":
                 self.paths.paths[
                     self.selected_path
@@ -1166,16 +1202,19 @@ class main(tk.Frame):
                 self.paths.paths[self.selected_path].ratio = r
                 if r == 1:
                     self.paths.paths[self.selected_path].type = PathType.LINEAR
+                    self.selected_path_type_menu.current(0)
                 elif r == 2:
                     self.paths.paths[self.selected_path].type = PathType.HALF
+                    self.selected_path_type_menu.current(2)
                 else:
                     self.paths.paths[self.selected_path].type = PathType.RATIO
+                    self.selected_path_type_menu.current(1)
             case "selected_invert":
                 if self.selected_path_inverted_var.get():
                     self.paths.paths[self.selected_path].motion = PathMotion.DEC
                 else:
                     self.paths.paths[self.selected_path].motion = PathMotion.ACC
-                if self.paths.paths[self.selected_path].ratio == 1:
+                if self.paths.paths[self.selected_path].type == PathType.LINEAR:
                     self.paths.paths[self.selected_path].motion = PathMotion.CONST
             case "color_selected_path":
                 for i in range(3):
@@ -1185,6 +1224,47 @@ class main(tk.Frame):
                 self.paths.paths[
                     self.selected_path
                 ].color = self.color_selected_path.copy()
+
+    def select_path_type(self, event):
+        c = self.path_type_menu.current()
+        match c:
+            case PathType.LINEAR.value:
+                self.set_path_ratio_spin.config(state="disable")
+                self.set_path_length_spin.config(state="normal")
+                self.set_path_init_length_spin.config(state="disable")
+                self.path_inverted_chk.config(state="disable")
+            case PathType.RATIO.value:
+                self.set_path_ratio_spin.config(state="normal")
+                self.set_path_length_spin.config(state="disable")
+                self.set_path_init_length_spin.config(state="normal")
+                self.path_inverted_chk.config(state="normal")
+            case PathType.HALF.value:
+                self.set_path_ratio_spin.config(state="disable")
+                self.set_path_length_spin.config(state="disable")
+                self.set_path_init_length_spin.config(state="normal")
+                self.path_inverted_chk.config(state="normal")
+
+    def select_selected_path_type(self, event):
+        c = self.selected_path_type_menu.current()
+        match c:
+            case PathType.LINEAR.value:
+                self.paths.paths[self.selected_path].type = PathType.LINEAR
+                self.set_selected_path_ratio_spin.config(state="disable")
+                self.set_selected_path_length_spin.config(state="normal")
+                self.set_selected_path_init_length_spin.config(state="disable")
+                self.selected_path_inverted_chk.config(state="disable")
+            case PathType.RATIO.value:
+                self.paths.paths[self.selected_path].type = PathType.RATIO
+                self.set_selected_path_ratio_spin.config(state="normal")
+                self.set_selected_path_length_spin.config(state="disable")
+                self.set_selected_path_init_length_spin.config(state="normal")
+                self.selected_path_inverted_chk.config(state="normal")
+            case PathType.HALF.value:
+                self.paths.paths[self.selected_path].type = PathType.HALF
+                self.set_selected_path_ratio_spin.config(state="disable")
+                self.set_selected_path_length_spin.config(state="disable")
+                self.set_selected_path_init_length_spin.config(state="normal")
+                self.selected_path_inverted_chk.config(state="normal")
 
 
 root = tk.Tk()
