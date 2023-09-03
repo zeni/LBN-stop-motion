@@ -14,14 +14,14 @@ mode = 0
 [paths]
 ratio = 1.5
 min_l = 20
-n = 5
+n = 10
 color = [ 255, 255, 213,]
 invert = false
 
 [onion]
 n = 2
 opacity = 50
-enable = true
+enable = false
 
 [camera]
 source = 0
